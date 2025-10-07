@@ -1,0 +1,39 @@
+[project]
+name = "sarsolver"
+version = "1.0.2"
+description = "meeeeh"
+authors = [
+    { name = "Joshua DM Hellier", email = "joshuadmhellier@gmail.com" }
+]
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy (>=2.2.0,<2.3.0)",
+    "scipy (>=1.16.0,<2.0.0)",
+    "joblib (>=1.5.1,<2.0.0)",
+    "pymap3d (>=3.1.0,<4.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "sarpy (>=1.3.60,<2.0.0)",
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "pytest (>=8.4.0, <9.0.0)"
+]
+
+# Get FFTW
+[tool.cibuildwheel.linux]
+before-all = """if [[ $(which yum) ]]; then yum install -y fftw-devel hdf5-devel epel-release llvm-devel;
+                else if [[ $(which apt-get) ]]; then apt-get install -y libfftw3-dev libhdf5-dev llvm-dev;
+                else if [[ $(which dnf) ]]; then dnf install -y fftw-devel hdf5-devel llvm-toolset;
+                else if [[ $(which apk) ]]; then apk add fftw-dev hdf5-dev llvm-test-utils llvm-gtest llvm llvm-dev llvm-static curl llvm-linker-tools;
+                else echo ruh roh; fi; fi; fi; fi;"""
+
+
+[tool.setuptools]
+ext-modules = [
+    { name = "sarsolver.sarsolver_cxx", sources = ['src/sarsolver/cxx_binding/sarsolver_cxx.cpp'], libraries = ['fftw3'] }
+]
+
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
