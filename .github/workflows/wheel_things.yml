@@ -1,0 +1,53 @@
+name: Build
+
+on: [ pull_request, workflow_dispatch ]
+
+env:
+  CIBW_TEST_REQUIRES: pytest
+  CIBW_TEST_COMMAND: "pip install git+https://github.com/TomographicImaging/CIL; pytest {project}/tests"
+
+jobs:
+  build_wheels:
+    name: Build and test wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pypa/cibuildwheel@v3.0.1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          path: ./wheelhouse/*.whl
+
+  make_sdist:
+    name: Make SDist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build SDist
+        run: pipx run build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cibw-sdist
+          path: dist/*.tar.gz
+
+  upload_all:
+      needs: [build_wheels, make_sdist]
+      environment: pypi
+      permissions:
+        id-token: write
+      runs-on: ubuntu-latest
+      if: github.event_name == 'release' && github.event.action == 'published'
+      steps:
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: cibw-*
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
