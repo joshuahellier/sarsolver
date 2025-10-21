@@ -19,6 +19,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
+          name: cibw-wheels
           path: ./wheelhouse/*.whl
 
   make_sdist:
@@ -41,7 +42,7 @@ jobs:
       steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: ./*
+          pattern: cibw-*
           path: dist
-          merge-multiple: false
+          merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1
