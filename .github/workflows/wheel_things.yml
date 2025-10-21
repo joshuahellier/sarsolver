@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-
     steps:
       - uses: actions/checkout@v5
       - uses: pypa/cibuildwheel@v3.0.1
@@ -22,22 +21,33 @@ jobs:
         with:
           path: ./wheelhouse/*.whl
 
+  publish_wheels:
+      needs: build_wheels
+      environment: pypi
+      permissions:
+        id-token: write
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: ./*.whl
+          path: wheelhouse
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
   make_sdist:
-    name: Make SDist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
       - name: Build SDist
         run: pipx run build --sdist
-
       - uses: actions/upload-artifact@v4
         with:
           name: cibw-sdist
           path: dist/*.tar.gz
 
-  upload_all:
-      needs: [build_wheels, make_sdist]
+  publish_sdist:
+      needs: make_sdist
       environment: pypi
       permissions:
         id-token: write
@@ -48,5 +58,4 @@ jobs:
           pattern: cibw-*
           path: dist
           merge-multiple: true
-
       - uses: pypa/gh-action-pypi-publish@release/v1
