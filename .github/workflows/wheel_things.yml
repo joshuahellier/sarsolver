@@ -41,7 +41,7 @@ jobs:
       steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: *
+          pattern: ./*
           path: dist
           merge-multiple: false
       - uses: pypa/gh-action-pypi-publish@release/v1
