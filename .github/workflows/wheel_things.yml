@@ -30,8 +30,8 @@ jobs:
       steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: ./*.whl
-          path: wheelhouse
+          pattern: ./wheelhouse/*.whl
+          path: dist
           merge-multiple: true
       - uses: pypa/gh-action-pypi-publish@release/v1
 
