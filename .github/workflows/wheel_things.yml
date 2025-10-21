@@ -21,20 +21,6 @@ jobs:
         with:
           path: ./wheelhouse/*.whl
 
-  publish_wheels:
-      needs: build_wheels
-      environment: pypi
-      permissions:
-        id-token: write
-      runs-on: ubuntu-latest
-      steps:
-      - uses: actions/download-artifact@v5
-        with:
-          pattern: ./wheelhouse/*.whl
-          path: dist
-          merge-multiple: true
-      - uses: pypa/gh-action-pypi-publish@release/v1
-
   make_sdist:
     runs-on: ubuntu-latest
     steps:
@@ -46,8 +32,8 @@ jobs:
           name: cibw-sdist
           path: dist/*.tar.gz
 
-  publish_sdist:
-      needs: make_sdist
+  publish:
+      needs: [build_wheels, make_sdist]
       environment: pypi
       permissions:
         id-token: write
@@ -55,7 +41,7 @@ jobs:
       steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: cibw-*
+          pattern: *
           path: dist
-          merge-multiple: true
+          merge-multiple: false
       - uses: pypa/gh-action-pypi-publish@release/v1
