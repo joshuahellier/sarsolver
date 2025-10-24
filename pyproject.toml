@@ -1,6 +1,6 @@
 [project]
 name = "sarsolver"
-version = "1.0.3"
+version = "1.0.4"
 description = "Python module with a compiled C++ backend used for Synthetic Aperture Radar (SAR) operator forward and adjoint evaluation. Compatible with CCPi's CIL framework by design."
 authors = [
     { name = "Joshua DM Hellier", email = "joshuadmhellier@gmail.com" }
